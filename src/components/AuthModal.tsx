@@ -18,7 +18,7 @@ import {
   KeyRound,
   ArrowLeft
 } from 'lucide-react';
-import { UserProfile, NotificationItem } from '../types/job';
+import { UserProfile, NotificationItem, Language } from '../types/job';
 
 interface AuthModalProps {
   isOpen: boolean;
@@ -26,6 +26,7 @@ interface AuthModalProps {
   currentUser: UserProfile;
   onSelectUser: (user: UserProfile) => void;
   onAddNotification?: (notif: NotificationItem) => void;
+  lang?: Language;
 }
 
 type AuthTab = 'login' | 'register' | 'forgot_password';
@@ -37,6 +38,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
   currentUser,
   onSelectUser,
   onAddNotification,
+  lang = 'vi',
 }) => {
   const [activeTab, setActiveTab] = useState<AuthTab>('login');
   const [showPassword, setShowPassword] = useState(false);
@@ -66,19 +68,160 @@ export const AuthModal: React.FC<AuthModalProps> = ({
   const [authSuccessMsg, setAuthSuccessMsg] = useState<string | null>(null);
   const [authErrorMsg, setAuthErrorMsg] = useState<string | null>(null);
 
+  const L = {
+    vi: {
+      tagline: 'Nền tảng tuyển dụng & Việc làm',
+      tabLogin: 'Đăng nhập',
+      tabRegister: 'Đăng ký tài khoản',
+      socialHeadingLogin: 'Đăng nhập nhanh với mạng xã hội:',
+      socialHeadingReg: 'Đăng ký nhanh chỉ với 1 chạm:',
+      continueGoogle: 'Tiếp tục với Google',
+      orEmail: 'Hoặc bằng email',
+      emailLabel: 'Email đăng nhập:',
+      passwordLabel: 'Mật khẩu:',
+      forgotPassLink: 'Quên mật khẩu?',
+      rememberMe: 'Ghi nhớ đăng nhập',
+      loginBtn: 'Đăng nhập vào Job',
+      roleLabel: 'Bạn tham gia Job với tư cách:',
+      roleCandidate: 'Ứng viên tìm việc',
+      roleRecruiter: 'Nhà tuyển dụng',
+      nameLabel: 'Họ và tên của bạn:',
+      namePlaceholder: 'Ví dụ: Lý Gia Hân',
+      emailRegLabel: 'Email:',
+      phoneLabel: 'Số điện thoại:',
+      majorLabelCandidate: 'Ngành học / Chuyên môn chính:',
+      majorLabelRecruiter: 'Tên Công ty / Đơn vị tuyển dụng:',
+      majorPlaceholderCandidate: 'Ví dụ: Ngôn ngữ Hàn Quốc, CNTT, Marketing...',
+      majorPlaceholderRecruiter: 'Ví dụ: Công ty Cổ phần K-Vina Life',
+      confirmPassLabel: 'Nhập lại mật khẩu:',
+      minPassNotice: 'Tối thiểu 6 ký tự',
+      confirmPassNotice: 'Xác nhận lại',
+      agreeTermsText: 'Tôi đồng ý với Điều khoản sử dụng và Chính sách bảo mật của Job.',
+      registerBtnCandidate: 'Tạo tài khoản Ứng viên',
+      registerBtnRecruiter: 'Tạo tài khoản Nhà tuyển dụng',
+      backToLogin: 'Quay lại Đăng nhập',
+      forgotTitle: 'Khôi phục mật khẩu tài khoản',
+      forgotDesc: 'Nhập địa chỉ email đăng ký, chúng tôi sẽ gửi liên kết để bạn thiết lập lại mật khẩu.',
+      forgotBtn: 'Gửi liên kết đặt lại mật khẩu',
+      forgotSentTitle: 'Đã gửi mã xác nhận!',
+      forgotSentDesc: 'Vui lòng kiểm tra hộp thư đến (hoặc hòm thư rác/Spam) và làm theo hướng dẫn.',
+      backLoginBtn: 'Trở lại màn hình Đăng nhập',
+      sslNotice: 'Bảo mật chuẩn mã hóa SSL 256-bit của Job',
+      errFillFields: 'Vui lòng nhập đầy đủ thông tin.',
+      errShortPass: 'Mật khẩu phải có ít nhất 6 ký tự.',
+      errMismatchPass: 'Mật khẩu xác nhận không khớp.',
+      errAgreeTerms: 'Bạn cần đồng ý với Điều khoản sử dụng và Chính sách bảo mật.',
+      errEmailInvalid: 'Vui lòng nhập địa chỉ email hợp lệ.',
+      loginSuccess: 'Đăng nhập thành công qua',
+      welcome: 'Chào mừng',
+    },
+    en: {
+      tagline: 'Recruitment & Job Opportunity Platform',
+      tabLogin: 'Sign In',
+      tabRegister: 'Create Account',
+      socialHeadingLogin: 'Fast sign-in with social accounts:',
+      socialHeadingReg: 'Fast 1-click registration:',
+      continueGoogle: 'Continue with Google',
+      orEmail: 'Or continue with email',
+      emailLabel: 'Email Address:',
+      passwordLabel: 'Password:',
+      forgotPassLink: 'Forgot password?',
+      rememberMe: 'Remember me',
+      loginBtn: 'Sign In to Job',
+      roleLabel: 'Join Job platform as:',
+      roleCandidate: 'Job Seeker',
+      roleRecruiter: 'Employer / Recruiter',
+      nameLabel: 'Full Name:',
+      namePlaceholder: 'e.g. Alex Johnson',
+      emailRegLabel: 'Email:',
+      phoneLabel: 'Phone Number:',
+      majorLabelCandidate: 'Field of Study / Specialization:',
+      majorLabelRecruiter: 'Company / Organization Name:',
+      majorPlaceholderCandidate: 'e.g. Korean Linguistics, Computer Science...',
+      majorPlaceholderRecruiter: 'e.g. K-Vina Global Tech Ltd.',
+      confirmPassLabel: 'Confirm Password:',
+      minPassNotice: 'At least 6 characters',
+      confirmPassNotice: 'Confirm password',
+      agreeTermsText: 'I agree to the Terms of Service and Privacy Policy of Job.',
+      registerBtnCandidate: 'Create Candidate Account',
+      registerBtnRecruiter: 'Create Recruiter Account',
+      backToLogin: 'Back to Sign In',
+      forgotTitle: 'Reset Account Password',
+      forgotDesc: 'Enter your registered email address to receive secure instructions to reset your password.',
+      forgotBtn: 'Send Password Reset Link',
+      forgotSentTitle: 'Reset Instructions Sent!',
+      forgotSentDesc: 'Please check your email inbox (including Spam folder) and follow the instructions.',
+      backLoginBtn: 'Return to Sign In',
+      sslNotice: 'Protected by Job 256-bit SSL encryption',
+      errFillFields: 'Please fill in all required fields.',
+      errShortPass: 'Password must be at least 6 characters.',
+      errMismatchPass: 'Passwords do not match.',
+      errAgreeTerms: 'You must agree to the Terms of Service and Privacy Policy.',
+      errEmailInvalid: 'Please enter a valid email address.',
+      loginSuccess: 'Successfully signed in via',
+      welcome: 'Welcome',
+    },
+    ko: {
+      tagline: '글로벌 채용 및 일자리 매칭 플랫폼',
+      tabLogin: '로그인',
+      tabRegister: '회원가입',
+      socialHeadingLogin: '소셜 계정으로 빠른 로그인:',
+      socialHeadingReg: '원클릭 간편 회원가입:',
+      continueGoogle: 'Google 계정으로 계속하기',
+      orEmail: '또는 이메일로 이용',
+      emailLabel: '로그인 이메일:',
+      passwordLabel: '비밀번호:',
+      forgotPassLink: '비밀번호 찾기',
+      rememberMe: '로그인 상태 유지',
+      loginBtn: 'Job 플랫폼 로그인',
+      roleLabel: '회원 유형을 선택하세요:',
+      roleCandidate: '일자리 구직자',
+      roleRecruiter: '기업 채용담당자',
+      nameLabel: '성명 (Full Name):',
+      namePlaceholder: '예: 홍길동',
+      emailRegLabel: '이메일 주소:',
+      phoneLabel: '연락처 (전화번호):',
+      majorLabelCandidate: '전공 또는 주요 희망 직무:',
+      majorLabelRecruiter: '기업명 / 채용 부서명:',
+      majorPlaceholderCandidate: '예: 한국어 전공, IT/개발, 고객상담...',
+      majorPlaceholderRecruiter: '예: (주)케이비나 글로벌',
+      confirmPassLabel: '비밀번호 확인:',
+      minPassNotice: '최소 6자 이상',
+      confirmPassNotice: '비밀번호 재입력',
+      agreeTermsText: 'Job 플랫폼 이용약관 및 개인정보 처리방침에 동의합니다.',
+      registerBtnCandidate: '구직자 계정 생성',
+      registerBtnRecruiter: '기업 회원가입',
+      backToLogin: '로그인 화면으로 돌아가기',
+      forgotTitle: '계정 비밀번호 재설정',
+      forgotDesc: '가입하신 이메일 주소를 입력하시면 비밀번호를 재설정할 수 있는 안내 메일을 보내드립니다.',
+      forgotBtn: '비밀번호 재설정 링크 발송',
+      forgotSentTitle: '인증 메일 발송 완료!',
+      forgotSentDesc: '수신함(스팸함 포함)을 확인하시고 메일 내 안내 링크를 클릭해주세요.',
+      backLoginBtn: '로그인으로 돌아가기',
+      sslNotice: '256비트 SSL 표준 암호화 적용으로 안전하게 보호됩니다',
+      errFillFields: '모든 필수 항목을 입력해주세요.',
+      errShortPass: '비밀번호는 최소 6자 이상이어야 합니다.',
+      errMismatchPass: '비밀번호 확인이 일치하지 않습니다.',
+      errAgreeTerms: '이용약관 및 개인정보 처리방침 동의가 필요합니다.',
+      errEmailInvalid: '유효한 이메일 주소를 입력해주세요.',
+      loginSuccess: '다음 계정으로 성공적으로 로그인되었습니다:',
+      welcome: '환영합니다',
+    },
+  }[lang];
+
   if (!isOpen) return null;
 
   const triggerLoginSuccess = (userObj: UserProfile, providerName: string) => {
-    setAuthSuccessMsg(`Đăng nhập thành công qua ${providerName}! Chào mừng ${userObj.fullName}.`);
+    setAuthSuccessMsg(`${L.loginSuccess} ${providerName}! ${L.welcome} ${userObj.fullName}.`);
     onSelectUser(userObj);
 
     if (onAddNotification) {
       onAddNotification({
         id: `notif-auth-${Date.now()}`,
-        title: `Đăng nhập thành công với ${providerName}`,
-        message: `Chào mừng ${userObj.fullName} đã quay trở lại Job - Nền tảng tuyển dụng & Việc làm!`,
+        title: lang === 'ko' ? `${providerName} 계정 로그인 완료` : lang === 'en' ? `Signed in with ${providerName}` : `Đăng nhập thành công với ${providerName}`,
+        message: lang === 'ko' ? `${userObj.fullName} 님 환영합니다!` : lang === 'en' ? `Welcome back, ${userObj.fullName}!` : `Chào mừng ${userObj.fullName} đã quay trở lại Job!`,
         type: 'message',
-        timestamp: 'Vừa xong',
+        timestamp: lang === 'ko' ? '방금 전' : lang === 'en' ? 'Just now' : 'Vừa xong',
         read: false,
       });
     }
@@ -103,14 +246,14 @@ export const AuthModal: React.FC<AuthModalProps> = ({
           fullName: 'Lý Gia Hân',
           email: 'lygiahan220600@gmail.com',
           phone: '0909 112 233',
-          avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=120&auto=format&fit=crop&q=80',
+          avatar: '/src/assets/images/avatar_candidate_1790732866935.jpg',
           address: 'Quận 1, TP. Hồ Chí Minh',
           district: 'Quận 1',
           city: 'TP. Hồ Chí Minh',
           studentStatus: 'Cử nhân Ngôn ngữ & Kinh doanh',
           major: 'Tiếng Hàn & Thương mại Quốc tế',
           university: 'Đại học Quốc gia TP.HCM',
-          bio: 'Tài khoản đăng nhập bảo mật qua Google One Tap. Tìm kiếm cơ hội việc làm linh hoạt ca tối hoặc bán thời gian.',
+          bio: 'Tài khoản đăng nhập bảo mật qua Google. Tìm kiếm cơ hội việc làm linh hoạt ca tối hoặc bán thời gian.',
           skills: ['Tiếng Hàn giao tiếp', 'Tiếng Anh B2', 'Chăm sóc khách hàng', 'Dịch thuật', 'Tin học văn phòng'],
           languages: ['Tiếng Việt', 'Tiếng Hàn (TOPIK 3)', 'Tiếng Anh'],
           preferredWorkTypes: ['Bán thời gian (Part-time)', 'Ca tối', 'Linh hoạt'],
@@ -126,7 +269,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
           fullName: 'Lý Gia Hân',
           email: 'lygiahan220600@gmail.com',
           phone: '0909 112 233',
-          avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=120&auto=format&fit=crop&q=80',
+          avatar: '/src/assets/images/avatar_candidate_1790732866935.jpg',
           address: '180 Hai Bà Trưng, Quận 1',
           district: 'Quận 1',
           city: 'TP. Hồ Chí Minh',
@@ -138,36 +281,36 @@ export const AuthModal: React.FC<AuthModalProps> = ({
           languages: ['Tiếng Việt', 'Tiếng Hàn'],
           preferredWorkTypes: ['Bán thời gian (Part-time)', 'Ca tối'],
           preferredSchedule: 'Ca tối 18:00 - 22:00',
-          preferredSalary: '5 - 8 triệu / tháng',
-          preferredLocation: 'Quận 1, Quận 3',
-          radiusKm: 5,
+          preferredSalary: '25.000 - 35.000 đ/giờ',
+          preferredLocation: 'Quận 1',
+          radiusKm: 3,
         };
         triggerLoginSuccess(fbUser, 'Facebook');
-      } else if (provider === 'apple') {
+      } else {
         const appleUser: UserProfile = {
           id: `apple-${Date.now()}`,
           fullName: 'Lý Gia Hân',
           email: 'lygiahan220600@gmail.com',
-          phone: '0983 214 789',
-          avatar: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=120&auto=format&fit=crop&q=80',
-          address: 'Bình Thạnh, TP. Hồ Chí Minh',
-          district: 'Quận Bình Thạnh',
+          phone: '0909 112 233',
+          avatar: '/src/assets/images/avatar_candidate_1790732866935.jpg',
+          address: 'Quận 1, TP. Hồ Chí Minh',
+          district: 'Quận 1',
           city: 'TP. Hồ Chí Minh',
-          studentStatus: 'Sinh viên năm 2',
-          major: 'Ngôn ngữ & Truyền thông',
-          university: 'Đại học Quốc gia TP.HCM',
-          bio: 'Tài khoản Apple ID bảo mật với Hide My Email. Ưu tiên việc làm ca tối linh hoạt.',
-          skills: ['Giao tiếp tiếng Hàn', 'Sáng tạo nội dung', 'Chăm chỉ'],
-          languages: ['Tiếng Việt', 'Tiếng Hàn', 'Tiếng Anh'],
-          preferredWorkTypes: ['Bán thời gian (Part-time)', 'Ca tối', 'Làm việc từ xa (Remote)'],
-          preferredSchedule: '18:00 - 22:00',
-          preferredSalary: '6 - 9 triệu / tháng',
-          preferredLocation: 'Bình Thạnh, Quận 1',
+          studentStatus: 'Cử nhân',
+          major: 'Ngôn ngữ Hàn',
+          university: 'ĐH Quốc Gia',
+          bio: 'Tài khoản Apple ID bảo mật.',
+          skills: ['Tiếng Hàn', 'Tiếng Anh'],
+          languages: ['Tiếng Việt', 'Tiếng Hàn'],
+          preferredWorkTypes: ['Bán thời gian (Part-time)'],
+          preferredSchedule: 'Linh hoạt',
+          preferredSalary: 'Thỏa thuận',
+          preferredLocation: 'Quận 1',
           radiusKm: 5,
         };
-        triggerLoginSuccess(appleUser, 'Apple');
+        triggerLoginSuccess(appleUser, 'Apple ID');
       }
-    }, 900);
+    }, 800);
   };
 
   // 2. Email Login Submit
@@ -176,15 +319,21 @@ export const AuthModal: React.FC<AuthModalProps> = ({
     setAuthErrorMsg(null);
 
     if (!loginEmail || !loginPassword) {
-      setAuthErrorMsg('Vui lòng nhập đầy đủ email và mật khẩu.');
+      setAuthErrorMsg(L.errFillFields);
       return;
     }
 
-    const updatedUser: UserProfile = {
+    if (loginPassword.length < 6) {
+      setAuthErrorMsg(L.errShortPass);
+      return;
+    }
+
+    const matchedUser: UserProfile = {
       ...currentUser,
       email: loginEmail,
     };
-    triggerLoginSuccess(updatedUser, 'Email');
+
+    triggerLoginSuccess(matchedUser, 'Email');
   };
 
   // 3. Register Submit
@@ -192,24 +341,24 @@ export const AuthModal: React.FC<AuthModalProps> = ({
     e.preventDefault();
     setAuthErrorMsg(null);
 
-    if (!regName.trim()) {
-      setAuthErrorMsg('Vui lòng nhập họ và tên của bạn.');
+    if (!regName.trim() || !regEmail.trim()) {
+      setAuthErrorMsg(L.errFillFields);
       return;
     }
-    if (!regEmail.trim()) {
-      setAuthErrorMsg('Vui lòng nhập địa chỉ email hợp lệ.');
+    if (!regEmail.includes('@')) {
+      setAuthErrorMsg(L.errEmailInvalid);
       return;
     }
     if (regPassword.length < 6) {
-      setAuthErrorMsg('Mật khẩu phải có ít nhất 6 ký tự.');
+      setAuthErrorMsg(L.errShortPass);
       return;
     }
     if (regPassword !== regConfirmPassword) {
-      setAuthErrorMsg('Mật khẩu xác nhận không khớp.');
+      setAuthErrorMsg(L.errMismatchPass);
       return;
     }
     if (!agreeTerms) {
-      setAuthErrorMsg('Bạn cần đồng ý với Điều khoản sử dụng và Chính sách bảo mật.');
+      setAuthErrorMsg(L.errAgreeTerms);
       return;
     }
 
@@ -222,12 +371,12 @@ export const AuthModal: React.FC<AuthModalProps> = ({
       address: 'Quận 1, TP. Hồ Chí Minh',
       district: 'Quận 1',
       city: 'TP. Hồ Chí Minh',
-      studentStatus: accountType === 'candidate' ? 'Ứng viên tìm việc' : 'Nhà tuyển dụng',
-      major: regMajor || (accountType === 'candidate' ? 'Ngôn ngữ & Kinh doanh' : 'Quản trị nhân sự'),
-      university: 'Đại học tại TP.HCM',
+      studentStatus: accountType === 'candidate' ? (lang === 'ko' ? '구직자' : lang === 'en' ? 'Job Seeker' : 'Ứng viên tìm việc') : (lang === 'ko' ? '채용담당자' : lang === 'en' ? 'Recruiter' : 'Nhà tuyển dụng'),
+      major: regMajor || (accountType === 'candidate' ? (lang === 'ko' ? '어학 및 비즈니스' : lang === 'en' ? 'Languages & Business' : 'Ngôn ngữ & Kinh doanh') : 'HR'),
+      university: 'Đại học Quốc gia TP.HCM',
       bio: accountType === 'candidate'
-        ? `Tài khoản ứng viên mới đăng ký trên nền tảng Job. Đang tìm kiếm việc làm phù hợp với năng lực.`
-        : `Tài khoản Nhà tuyển dụng / Doanh nghiệp trên Job. Tìm kiếm nhân sự trẻ năng động.`,
+        ? `Tài khoản ứng viên mới đăng ký trên nền tảng Job.`
+        : `Tài khoản Nhà tuyển dụng / Doanh nghiệp trên Job.`,
       skills: ['Giao tiếp tốt', 'Nhiệt huyết', 'Chăm chỉ'],
       languages: ['Tiếng Việt', 'Tiếng Anh'],
       preferredWorkTypes: ['Bán thời gian (Part-time)', 'Ca tối', 'Toàn thời gian'],
@@ -237,16 +386,16 @@ export const AuthModal: React.FC<AuthModalProps> = ({
       radiusKm: 5,
     };
 
-    setAuthSuccessMsg('Đăng ký tài khoản thành công! Tự động đăng nhập vào Job...');
+    setAuthSuccessMsg(lang === 'ko' ? '회원가입이 완료되었습니다!' : lang === 'en' ? 'Account created successfully!' : 'Đăng ký tài khoản thành công!');
     onSelectUser(newUser);
 
     if (onAddNotification) {
       onAddNotification({
         id: `notif-reg-${Date.now()}`,
-        title: 'Chào mừng bạn đến với Job - Nền tảng tuyển dụng & Việc làm',
-        message: `Tài khoản ${newUser.fullName} (${newUser.email}) đã được kích hoạt thành công! Hãy tạo CV và khám phá việc làm ngay.`,
+        title: lang === 'ko' ? 'Job 가입을 환영합니다' : lang === 'en' ? 'Welcome to Job' : 'Chào mừng bạn đến với Job',
+        message: `${newUser.fullName} (${newUser.email})`,
         type: 'message',
-        timestamp: 'Vừa xong',
+        timestamp: lang === 'ko' ? '방금 전' : lang === 'en' ? 'Just now' : 'Vừa xong',
         read: false,
       });
     }
@@ -261,7 +410,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
   const handleForgotSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!forgotEmail) {
-      setAuthErrorMsg('Vui lòng nhập địa chỉ email của bạn.');
+      setAuthErrorMsg(L.errEmailInvalid);
       return;
     }
     setForgotSent(true);
@@ -284,7 +433,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                   Career
                 </span>
               </h3>
-              <p className="text-[11px] text-[#9EBFB5]">Nền tảng tuyển dụng & Việc làm</p>
+              <p className="text-[11px] text-[#9EBFB5]">{L.tagline}</p>
             </div>
           </div>
           <button
@@ -295,7 +444,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
           </button>
         </div>
 
-        {/* Tab Switcher: Đăng nhập vs Đăng ký */}
+        {/* Tab Switcher: Login vs Register */}
         {activeTab !== 'forgot_password' && (
           <div className="flex border-b border-[#EDE6D6] bg-white text-xs font-bold">
             <button
@@ -310,7 +459,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                   : 'border-transparent text-neutral-500 hover:text-[#1B2C24]'
               }`}
             >
-              Đăng nhập
+              {L.tabLogin}
             </button>
             <button
               type="button"
@@ -324,7 +473,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                   : 'border-transparent text-neutral-500 hover:text-[#1B2C24]'
               }`}
             >
-              Đăng ký tài khoản
+              {L.tabRegister}
             </button>
           </div>
         )}
@@ -347,11 +496,11 @@ export const AuthModal: React.FC<AuthModalProps> = ({
             </div>
           )}
 
-          {/* 1. SOCIAL SIGN IN BUTTONS (Google, Facebook, Apple) */}
+          {/* 1. SOCIAL SIGN IN BUTTONS */}
           {activeTab !== 'forgot_password' && (
             <div className="space-y-2.5">
               <span className="text-[11px] font-bold uppercase tracking-wider text-[#4A7D5C] block">
-                {activeTab === 'login' ? 'Đăng nhập nhanh với mạng xã hội:' : 'Đăng ký nhanh chỉ với 1 chạm:'}
+                {activeTab === 'login' ? L.socialHeadingLogin : L.socialHeadingReg}
               </span>
 
               {/* Google Button */}
@@ -383,7 +532,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                     />
                   </svg>
                 )}
-                <span>Tiếp tục với Google</span>
+                <span>{L.continueGoogle}</span>
               </button>
 
               <div className="grid grid-cols-2 gap-2">
@@ -426,17 +575,17 @@ export const AuthModal: React.FC<AuthModalProps> = ({
               <div className="relative py-2 flex items-center justify-center">
                 <div className="border-t border-[#DED3BD] w-full" />
                 <span className="bg-[#FAF8F2] px-2 text-[10px] uppercase font-bold text-neutral-400 absolute">
-                  Hoặc bằng email
+                  {L.orEmail}
                 </span>
               </div>
             </div>
           )}
 
-          {/* 2. FORM: ĐĂNG NHẬP (Login Tab) */}
+          {/* 2. FORM: LOGIN */}
           {activeTab === 'login' && (
             <form onSubmit={handleEmailLoginSubmit} className="space-y-3.5">
               <div>
-                <label className="font-semibold text-neutral-700 block mb-1">Email đăng nhập:</label>
+                <label className="font-semibold text-neutral-700 block mb-1">{L.emailLabel}</label>
                 <div className="relative">
                   <Mail className="w-4 h-4 text-neutral-400 absolute left-3 top-1/2 -translate-y-1/2" />
                   <input
@@ -452,7 +601,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
 
               <div>
                 <div className="flex justify-between items-center mb-1">
-                  <label className="font-semibold text-neutral-700">Mật khẩu:</label>
+                  <label className="font-semibold text-neutral-700">{L.passwordLabel}</label>
                   <button
                     type="button"
                     onClick={() => {
@@ -461,7 +610,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                     }}
                     className="text-[11px] text-[#385A45] hover:underline font-medium"
                   >
-                    Quên mật khẩu?
+                    {L.forgotPassLink}
                   </button>
                 </div>
                 <div className="relative">
@@ -492,7 +641,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                     onChange={(e) => setRememberMe(e.target.checked)}
                     className="rounded text-[#2D4738] focus:ring-[#2D4738]"
                   />
-                  <span>Ghi nhớ đăng nhập</span>
+                  <span>{L.rememberMe}</span>
                 </label>
               </div>
 
@@ -500,18 +649,18 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                 type="submit"
                 className="w-full py-2.5 rounded-xl bg-[#2D4738] hover:bg-[#385A45] text-white font-bold text-xs shadow-md transition-all flex items-center justify-center gap-1.5"
               >
-                <span>Đăng nhập vào Job</span>
+                <span>{L.loginBtn}</span>
                 <ArrowRight className="w-3.5 h-3.5" />
               </button>
             </form>
           )}
 
-          {/* 3. FORM: ĐĂNG KÝ TÀI KHOẢN (Register Tab) */}
+          {/* 3. FORM: REGISTER */}
           {activeTab === 'register' && (
             <form onSubmit={handleRegisterSubmit} className="space-y-3">
-              {/* Role Picker: Ứng viên vs Nhà tuyển dụng */}
+              {/* Role Picker */}
               <div>
-                <label className="font-semibold text-neutral-700 block mb-1">Bạn tham gia Job với tư cách:</label>
+                <label className="font-semibold text-neutral-700 block mb-1">{L.roleLabel}</label>
                 <div className="grid grid-cols-2 gap-2 p-1 bg-[#F5F1E8] rounded-xl">
                   <button
                     type="button"
@@ -523,7 +672,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                     }`}
                   >
                     <User className="w-3.5 h-3.5" />
-                    <span>Ứng viên tìm việc</span>
+                    <span>{L.roleCandidate}</span>
                   </button>
                   <button
                     type="button"
@@ -535,14 +684,14 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                     }`}
                   >
                     <Briefcase className="w-3.5 h-3.5" />
-                    <span>Nhà tuyển dụng</span>
+                    <span>{L.roleRecruiter}</span>
                   </button>
                 </div>
               </div>
 
               {/* Full Name */}
               <div>
-                <label className="font-semibold text-neutral-700 block mb-1">Họ và tên của bạn:</label>
+                <label className="font-semibold text-neutral-700 block mb-1">{L.nameLabel}</label>
                 <div className="relative">
                   <User className="w-4 h-4 text-neutral-400 absolute left-3 top-1/2 -translate-y-1/2" />
                   <input
@@ -551,7 +700,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                     value={regName}
                     onChange={(e) => setRegName(e.target.value)}
                     className="w-full pl-9 pr-3 py-2 bg-white border border-[#DED3BD] rounded-xl focus:outline-none focus:ring-1 focus:ring-[#385A45]"
-                    placeholder="Ví dụ: Lý Gia Hân"
+                    placeholder={L.namePlaceholder}
                   />
                 </div>
               </div>
@@ -559,7 +708,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
               {/* Email & Phone */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                 <div>
-                  <label className="font-semibold text-neutral-700 block mb-1">Email:</label>
+                  <label className="font-semibold text-neutral-700 block mb-1">{L.emailRegLabel}</label>
                   <div className="relative">
                     <Mail className="w-4 h-4 text-neutral-400 absolute left-3 top-1/2 -translate-y-1/2" />
                     <input
@@ -568,13 +717,13 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                       value={regEmail}
                       onChange={(e) => setRegEmail(e.target.value)}
                       className="w-full pl-9 pr-3 py-2 bg-white border border-[#DED3BD] rounded-xl focus:outline-none focus:ring-1 focus:ring-[#385A45]"
-                      placeholder="uyen@gmail.com"
+                      placeholder="name@example.com"
                     />
                   </div>
                 </div>
 
                 <div>
-                  <label className="font-semibold text-neutral-700 block mb-1">Số điện thoại:</label>
+                  <label className="font-semibold text-neutral-700 block mb-1">{L.phoneLabel}</label>
                   <div className="relative">
                     <Phone className="w-4 h-4 text-neutral-400 absolute left-3 top-1/2 -translate-y-1/2" />
                     <input
@@ -591,25 +740,21 @@ export const AuthModal: React.FC<AuthModalProps> = ({
               {/* Major or Company */}
               <div>
                 <label className="font-semibold text-neutral-700 block mb-1">
-                  {accountType === 'candidate' ? 'Ngành học / Chuyên môn chính:' : 'Tên Công ty / Đơn vị tuyển dụng:'}
+                  {accountType === 'candidate' ? L.majorLabelCandidate : L.majorLabelRecruiter}
                 </label>
                 <input
                   type="text"
                   value={regMajor}
                   onChange={(e) => setRegMajor(e.target.value)}
                   className="w-full px-3 py-2 bg-white border border-[#DED3BD] rounded-xl focus:outline-none focus:ring-1 focus:ring-[#385A45]"
-                  placeholder={
-                    accountType === 'candidate'
-                      ? 'Ví dụ: Ngôn ngữ Hàn Quốc, CNTT, Marketing...'
-                      : 'Ví dụ: Công ty Cổ phần K-Vina Life'
-                  }
+                  placeholder={accountType === 'candidate' ? L.majorPlaceholderCandidate : L.majorPlaceholderRecruiter}
                 />
               </div>
 
               {/* Password & Confirm */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                 <div>
-                  <label className="font-semibold text-neutral-700 block mb-1">Mật khẩu:</label>
+                  <label className="font-semibold text-neutral-700 block mb-1">{L.passwordLabel}</label>
                   <div className="relative">
                     <Lock className="w-4 h-4 text-neutral-400 absolute left-3 top-1/2 -translate-y-1/2" />
                     <input
@@ -618,7 +763,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                       value={regPassword}
                       onChange={(e) => setRegPassword(e.target.value)}
                       className="w-full pl-9 pr-8 py-2 bg-white border border-[#DED3BD] rounded-xl focus:outline-none focus:ring-1 focus:ring-[#385A45]"
-                      placeholder="Tối thiểu 6 ký tự"
+                      placeholder={L.minPassNotice}
                     />
                     <button
                       type="button"
@@ -631,7 +776,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                 </div>
 
                 <div>
-                  <label className="font-semibold text-neutral-700 block mb-1">Nhập lại mật khẩu:</label>
+                  <label className="font-semibold text-neutral-700 block mb-1">{L.confirmPassLabel}</label>
                   <div className="relative">
                     <Lock className="w-4 h-4 text-neutral-400 absolute left-3 top-1/2 -translate-y-1/2" />
                     <input
@@ -640,7 +785,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                       value={regConfirmPassword}
                       onChange={(e) => setRegConfirmPassword(e.target.value)}
                       className="w-full pl-9 pr-8 py-2 bg-white border border-[#DED3BD] rounded-xl focus:outline-none focus:ring-1 focus:ring-[#385A45]"
-                      placeholder="Xác nhận lại"
+                      placeholder={L.confirmPassNotice}
                     />
                     <button
                       type="button"
@@ -662,11 +807,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                     onChange={(e) => setAgreeTerms(e.target.checked)}
                     className="mt-0.5 rounded text-[#2D4738] focus:ring-[#2D4738]"
                   />
-                  <span>
-                    Tôi đồng ý với{' '}
-                    <span className="text-[#385A45] font-semibold underline">Điều khoản sử dụng</span> và{' '}
-                    <span className="text-[#385A45] font-semibold underline">Chính sách bảo mật</span> của Job.
-                  </span>
+                  <span>{L.agreeTermsText}</span>
                 </label>
               </div>
 
@@ -674,13 +815,13 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                 type="submit"
                 className="w-full py-2.5 rounded-xl bg-[#2D4738] hover:bg-[#385A45] text-white font-bold text-xs shadow-md transition-all flex items-center justify-center gap-1.5 mt-2"
               >
-                <span>Tạo tài khoản {accountType === 'candidate' ? 'Ứng viên' : 'Nhà tuyển dụng'}</span>
+                <span>{accountType === 'candidate' ? L.registerBtnCandidate : L.registerBtnRecruiter}</span>
                 <ArrowRight className="w-3.5 h-3.5" />
               </button>
             </form>
           )}
 
-          {/* 4. FORM: QUÊN MẬT KHẨU (Forgot Password View) */}
+          {/* 4. FORGOT PASSWORD */}
           {activeTab === 'forgot_password' && (
             <div className="space-y-4">
               <button
@@ -693,25 +834,25 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                 className="flex items-center gap-1 text-xs text-[#385A45] font-semibold hover:underline"
               >
                 <ArrowLeft className="w-4 h-4" />
-                <span>Quay lại Đăng nhập</span>
+                <span>{L.backToLogin}</span>
               </button>
 
               <div className="text-center space-y-1">
                 <div className="w-10 h-10 rounded-full bg-[#EDE6D6] text-[#2D4738] flex items-center justify-center mx-auto mb-2">
                   <KeyRound className="w-5 h-5 text-[#385A45]" />
                 </div>
-                <h4 className="text-sm font-bold text-[#1B2C24]">Khôi phục mật khẩu tài khoản</h4>
+                <h4 className="text-sm font-bold text-[#1B2C24]">{L.forgotTitle}</h4>
                 <p className="text-neutral-500 text-xs leading-relaxed max-w-xs mx-auto">
-                  Nhập địa chỉ email đăng ký, chúng tôi sẽ gửi liên kết và mã xác thực 6 số để bạn thiết lập lại mật khẩu.
+                  {L.forgotDesc}
                 </p>
               </div>
 
               {forgotSent ? (
                 <div className="p-4 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-center space-y-2">
                   <CheckCircle2 className="w-7 h-7 text-emerald-600 mx-auto" />
-                  <p className="font-bold text-xs">Đã gửi mã xác nhận đến {forgotEmail}!</p>
+                  <p className="font-bold text-xs">{L.forgotSentTitle}</p>
                   <p className="text-[11px] text-neutral-600">
-                    Vui lòng kiểm tra hộp thư đến (hoặc hòm thư rác/Spam) và làm theo hướng dẫn để đăng nhập.
+                    {L.forgotSentDesc} ({forgotEmail})
                   </p>
                   <button
                     onClick={() => {
@@ -720,13 +861,13 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                     }}
                     className="mt-2 px-4 py-1.5 rounded-lg bg-[#2D4738] text-white text-xs font-semibold"
                   >
-                    Trở lại màn hình Đăng nhập
+                    {L.backLoginBtn}
                   </button>
                 </div>
               ) : (
                 <form onSubmit={handleForgotSubmit} className="space-y-3">
                   <div>
-                    <label className="font-semibold text-neutral-700 block mb-1">Email đăng ký:</label>
+                    <label className="font-semibold text-neutral-700 block mb-1">{L.emailLabel}</label>
                     <div className="relative">
                       <Mail className="w-4 h-4 text-neutral-400 absolute left-3 top-1/2 -translate-y-1/2" />
                       <input
@@ -744,7 +885,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                     type="submit"
                     className="w-full py-2.5 rounded-xl bg-[#2D4738] hover:bg-[#385A45] text-white font-bold text-xs shadow-md transition-all"
                   >
-                    Gửi liên kết đặt lại mật khẩu
+                    {L.forgotBtn}
                   </button>
                 </form>
               )}
@@ -755,7 +896,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
         {/* Footer info */}
         <div className="px-6 py-2.5 bg-[#F5F1E8] border-t border-[#DED3BD] text-center text-[11px] text-neutral-500 flex items-center justify-center gap-1.5">
           <ShieldCheck className="w-3.5 h-3.5 text-emerald-700" />
-          <span>Bảo mật chuẩn mã hóa SSL 256-bit của Job</span>
+          <span>{L.sslNotice}</span>
         </div>
       </div>
     </div>

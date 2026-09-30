@@ -1,17 +1,19 @@
 import React, { useEffect } from 'react';
 import { BellRing, X, Sparkles, CheckCircle2 } from 'lucide-react';
-import { NotificationItem } from '../types/job';
+import { Language, NotificationItem } from '../types/job';
 
 interface NotificationToastProps {
   notification: NotificationItem | null;
   onClose: () => void;
   onClick?: () => void;
+  lang?: Language;
 }
 
 export const NotificationToast: React.FC<NotificationToastProps> = ({
   notification,
   onClose,
   onClick,
+  lang = 'vi',
 }) => {
   useEffect(() => {
     if (!notification) return;
@@ -22,6 +24,8 @@ export const NotificationToast: React.FC<NotificationToastProps> = ({
   }, [notification, onClose]);
 
   if (!notification) return null;
+
+  const timeLabel = lang === 'ko' ? '방금 전' : lang === 'en' ? 'Just now' : 'Vừa xong';
 
   return (
     <div className="fixed bottom-6 right-6 z-50 max-w-sm w-full bg-[#1B2C24] text-white p-4 rounded-2xl shadow-2xl border border-[#385A45] flex items-start gap-3 animate-in fade-in slide-in-from-bottom-5 duration-300">
@@ -38,7 +42,7 @@ export const NotificationToast: React.FC<NotificationToastProps> = ({
       >
         <div className="flex items-center justify-between">
           <h4 className="text-xs font-bold text-[#FAF8F2] truncate">{notification.title}</h4>
-          <span className="text-[10px] text-[#9EBFB5]">Vừa xong</span>
+          <span className="text-[10px] text-[#9EBFB5]">{timeLabel}</span>
         </div>
         <p className="text-[11px] text-[#C7D9CC] mt-1 line-clamp-2 leading-relaxed">
           {notification.message}

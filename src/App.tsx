@@ -382,6 +382,8 @@ export default function App() {
               onNavigate={(screen) => setCurrentScreen(screen)}
               onOpenAIFinder={() => setIsAIFinderOpen(true)}
               onUpdateRadius={(rad) => handleUpdateUserProfile({ ...user, radiusKm: rad })}
+              lang={lang}
+              currency={currency}
             />
           )}
 
@@ -408,6 +410,7 @@ export default function App() {
               jobs={jobs}
               onSelectJob={(job) => setSelectedJobForDetail(job)}
               onStartChat={handleStartChatWithJob}
+              lang={lang}
             />
           )}
 
@@ -416,6 +419,7 @@ export default function App() {
               cvData={cvData}
               onUpdateCV={setCvData}
               user={user}
+              lang={lang}
             />
           )}
 
@@ -427,6 +431,8 @@ export default function App() {
               onSelectJob={(job) => setSelectedJobForDetail(job)}
               onStartChat={handleStartChatWithJob}
               onNavigate={(screen) => setCurrentScreen(screen)}
+              lang={lang}
+              currency={currency}
             />
           )}
 
@@ -437,6 +443,7 @@ export default function App() {
               jobs={jobs}
               onSelectJob={(job) => setSelectedJobForDetail(job)}
               user={user}
+              lang={lang}
             />
           )}
 
@@ -445,6 +452,8 @@ export default function App() {
               jobs={jobs}
               onSelectJob={(job) => setSelectedJobForDetail(job)}
               onStartChat={handleStartChatWithJob}
+              lang={lang}
+              currency={currency}
             />
           )}
 
@@ -467,6 +476,7 @@ export default function App() {
         jobs={jobs}
         onSelectJob={(job) => setSelectedJobForDetail(job)}
         onAddNotification={handleAddNotification}
+        lang={lang}
       />
 
       {/* 4. Global Job Details & Application Modal */}
@@ -491,12 +501,14 @@ export default function App() {
         currentUser={user}
         onAddNotification={handleAddNotification}
         onSelectUser={(u) => handleUpdateUserProfile(u)}
+        lang={lang}
       />
 
       {/* 6. Floating Instant Notification Toast */}
       <NotificationToast
         notification={activeToast}
         onClose={() => setActiveToast(null)}
+        lang={lang}
         onClick={() => {
           if (activeToast?.type === 'application_update') {
             setCurrentScreen('applications');
